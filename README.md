@@ -90,7 +90,7 @@ server.on("/submit", HTTP_POST, handleFormSubmit);
 
 ## 🧑‍💻 Author
 
-Made by Bharath Krishna, for the Seeed Fusion DIY Contest.
+Made by Bharath Krishna, for the Seeed Interactive Signage Contest.
 ESP32 magic, zero wires, 100% local.
 
 ---
