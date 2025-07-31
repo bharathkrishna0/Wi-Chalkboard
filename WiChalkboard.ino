@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <WebServer.h>
+#include "web_page.h"
 
 const char* ssid = "WiChalk";
 const char* password = "chalkboard";
@@ -11,23 +12,16 @@ WebServer server(80);
 String messages[MAX_MESSAGES];
 int messageCount = 0;
 
-// HTML page (served inline)
+// Generate dynamic HTML page
 String getHTMLPage() {
-  String html = "<!DOCTYPE html><html><head><title>Wi-Chalkboard</title>";
-  html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
-  html += "<style>body{font-family:sans-serif;padding:20px;}textarea{width:100%;height:80px;}ul{list-style:none;padding:0;}li{margin:10px 0;background:#eee;padding:10px;border-radius:5px;}</style></head><body>";
-  html += "<h2>🧠 Wi-Chalkboard</h2>";
-  html += "<form action='/submit' method='POST'>";
-  html += "<textarea name='message' placeholder='Write your message...'></textarea><br><br>";
-  html += "<input type='submit' value='Post Message'>";
-  html += "</form><hr><h3>📝 Recent Messages:</h3><ul>";
-
+  String msgList = "";
   for (int i = messageCount - 1; i >= 0; i--) {
-    html += "<li>" + messages[i] + "</li>";
+    msgList += "<li>" + messages[i] + "</li>";
   }
 
-  html += "</ul></body></html>";
-  return html;
+  String page = MAIN_page;
+  page.replace("%MESSAGES%", msgList);
+  return page;
 }
 
 // Root handler
@@ -53,7 +47,7 @@ void handleSubmit() {
     }
   }
   server.sendHeader("Location", "/", true);
-  server.send(303);
+  server.send(303); // Redirect to home
 }
 
 void setup() {
@@ -61,7 +55,7 @@ void setup() {
   Serial.println("Starting Wi-Chalkboard...");
 
   WiFi.softAP(ssid, password);
-  Serial.println("AP started. Connect to:");
+  Serial.print("Access Point started. Connect to: ");
   Serial.println(WiFi.softAPIP());
 
   server.on("/", handleRoot);
